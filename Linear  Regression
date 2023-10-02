@@ -1,0 +1,62 @@
+#### Import your Needed Packages and Libraries
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+####  Load the Dataset
+data=pd.read_csv('food.txt')
+data.head()
+data.info()
+###  Visualize the Data
+x=data['Population']
+y=data['Profit']
+plt.title('food dataset')
+plt.plot(x,y)
+plt.xlabel('Population')
+plt.ylabel('Profit')
+plt.show()
+###  Compute the Cost $J(\theta)
+def cost_function(X, y, theta):
+    m =len(y)
+    h=X.dot(theta)
+    j=1/(2*m)*np.sum(np.square(h-y))
+    return j
+m = data.Population.values.size
+X = np.append(np.ones((m, 1)), data.Population.values.reshape(m, 1), axis=1)
+y = data.Profit.values.reshape(m, 1)
+theta = np.zeros((2,1)) 
+J=cost_function(X, y, theta)
+print (J)
+###  Gradient Descent
+def gradient_descent(X, y, theta, alpha, iterations):
+        m = len(y)
+        costs=[]
+        for i in range(iterations):
+            h=X.dot(theta)
+            #errors=h-y
+            #gradient=X.T.dot(errors)
+            theta =theta-(alpha/m)*(X.T.dot(h-y))
+            J=cost_function(X, y, theta)
+            costs.append(J)
+            
+        return theta,costs
+theta,costs= gradient_descent(X, y, theta, alpha=0.01, iterations=1000)
+print("h(x) = {} + {}x1".format(str(round(theta[0, 0], 2)), str(round(theta[1, 0], 2))))
+### Plotting the Convergence
+iterations=1000
+plt.plot(range(1,iterations+1),costs, color='r')
+plt.xlabel('iteration of Gradient Descent')
+plt.ylabel=('Cost Function')
+plt.show()
+###  Training Data with Linear Regression Fit
+theta = np.squeeze(theta)
+sns.scatterplot(x = "Population", y= "Profit", data = data)
+
+x_value=[x for x in range(5, 25)]
+y_value=[(x * theta[1] + theta[0]) for x in x_value]
+sns.lineplot(x=x_value, y=y_value ,color='r')
+
+plt.xlabel("Population in 10000s")
+plt.ylabel("Profit in $10,000s")
+plt.title("Linear Regression Fit");
+
